@@ -2,22 +2,27 @@
 
 
 # EZPlayer
-![Swift 3.1](https://img.shields.io/badge/Swift-3.1-brightgreen.svg?style=flat) 
+![Swift 4](https://img.shields.io/badge/Swift-4.0-brightgreen.svg?style=flat) 
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
-<a href="https://img.shields.io/cocoapods/v/ZFPlayer.svg"><img src="https://img.shields.io/cocoapods/v/EZPlayer.svg"></a>
+<a href="https://img.shields.io/cocoapods/v/EZPlayer.svg"><img src="https://img.shields.io/cocoapods/v/EZPlayer.svg"></a>
 [![Platform](https://img.shields.io/cocoapods/p/EZPlayer.svg?style=flat)](http://cocoadocs.org/docsets/EZPlayer)
-![License](https://img.shields.io/cocoapods/l/BMPlayer.svg?style=flat)
+![License](https://img.shields.io/cocoapods/l/EZPlayer.svg?style=flat)
 
 ## 预览
-![EZPlayer](EZPlayer.gif)
+### native
+![EZPlayer](EZPlayer.gif) ![EZPlayer1](EZPlayer1.gif)
+
+### react native
+![EZPlayerRNBase](EZPlayerRNBase.gif) ![EZPlayerRNList](EZPlayerRNList.gif)
+
 
 ## 介绍
 基于AVPlayer封装的视频播放器，功能丰富，快速集成，可定制性强。
 
 ## 要求
 - iOS 8.0+ 
-- Xcode 8.3 (8E162)+
-- Swift 3.1+
+- Xcode 9.0+
+- Swift 4.0+
 
 ## 特性
 - 本地视频、网络视频播放（支持的格式请参考苹果AVPlayer文档）
@@ -32,6 +37,8 @@
 - [拖动进度显示预览图（m3u8不支持）](#preview)
 - [播放器控件皮肤自定义（自带一套浮动皮肤，嵌入和全屏用的一套皮肤）](#skin)
 - [支持广告功能](#ad)
+- [支持React Native](#rn)
+
 
 
 
@@ -253,10 +260,117 @@ open  var controlViewForIntercept : UIView?
 
 例子：EZPlayerExample-Skin(ad)
 
+<a name="rn"></a>
+
+- 支持React Native
+
+可以参考[EZPlayerExample_RN](https://github.com/easyui/EZPlayer/tree/master/EZPlayerExample_RN)项目，使用最新的`swift4`和最新的`react native`版本对EZPlayer的封装，实现EZPlayer的大部分功能。
+
+### react-native-ezplayer 文件：
+
+EZRNPlayerView.swift ： 对EZPlayer的封装，对接javascript
+
+EZRNPlayerViewManager.swift ： EZPlayer组件管理器
+
+EZRNPlayerViewBridge.h & EZRNPlayerViewBridge.m ： oc桥接
+
+EZPlayer.js ： 对EZPlayer封装的js api
+
+### 属性
+| key | description | value |                   
+| --- | --- | --- | 
+| source | 视频数据源  | PropTypes.object |
+| autoPlay|设置数据源后自动播放| PropTypes.bool |
+| useDefaultUI|使用EZPlayer自带皮肤| PropTypes.bool |
+| videoGravity|视频画面比例| PropTypes.string(aspect,aspectFill,scaleFill) |
+| fullScreenMode|全屏模式是竖屏还是横屏| PropTypes.string(portrait,landscape) |
+| onPlayerHeartbeat|播放器声明周期心跳| PropTypes.func |
+| onPlayerPlaybackTimeDidChange|addPeriodicTimeObserver方法的触发| PropTypes.func |
+| onPlayerStatusDidChange|播放器状态改变| PropTypes.func |
+| onPlayerPlaybackDidFinish|视频结束| PropTypes.func | 
+| onPlayerLoadingDidChange|loading状态改变| PropTypes.func | 
+| onPlayerControlsHiddenDidChange|播放器控制条隐藏显示| PropTypes.func | 
+| onPlayerDisplayModeDidChange|播放器显示模式改变了（全屏，嵌入屏，浮动）| PropTypes.object | 
+| onPlayerDisplayModeChangedWillAppear |播放器显示模式动画开始| PropTypes.func |
+| onPlayerDisplayModeChangedDidAppear |播放器显示模式动画结束| PropTypes.func |
+| onPlayerTapGestureRecognizer |点击播放器手势通知| PropTypes.func |
+| onPlayerDidPersistContentKey |FairPlay DRM| PropTypes.func |
+
+### 方法
+| function | description |                    
+| --- | --- | 
+| play() | 播放  |
+| pause() | 暂停 | 
+| stop() | 结束 | 
+| seek(time, callback) | 设置播放进度，单位秒 | 
+| replaceToPlay(source) | 替换播放源 |
+| rate(rate) | 设置播放速率 | 
+| autoPlay(autoPlay) | 设置自动播放，autoPlay是PropTypes.bool | 
+| videoGravity(videoGravity) | 设置视频画面比例，videoGravity：aspect,aspectFill,scaleFill | 
+| toEmbedded(animated = true, callback) | 进入嵌入屏模式 |
+| toFloat(animated = true, callback) | 进入悬浮屏模式 |
+| toFull(orientation = 'landscapeLeft', animated = true, callback) | 进入全屏模式，orientation: landscapeLeft , landscapeRight | 
+| fullScreenMode(fullScreenMode)| 设置全屏的模式，fullScreenMode:portrait , landscape | 
+
+
+### demo文件：
+
+BasePlayerExample.js ： EZPlayer的基础功能演示
+
+TablePlayerExample.js ：EZPlayer 在列表中的演示
+
+TablePlayerCell.js ： 列表的cell
+
+EZCustomPlayer.js ： 对EZPlayer.js进行封装，使用自定义ui，自定义ui可参考
+
+Utils.js ： 工具类
+
+#### 使用
+```js
+//基本使用
+//BasePlayerExample.js
+        <EZPlayer
+          ref={(e) => this._ezPlayer = e}
+          style={styles.player}
+          source={this.state.source }
+
+          autoPlay={true}
+          videoGravity={'aspect'} 
+          fullScreenMode={'landscape'}
+        />
+```
+
+```js
+//自定义ui
+//EZCustomPlayer.js
+          <TouchableWithoutFeedback onPress={this.action.onScreenTouch}>
+                <View>
+                    <EZPlayer
+                        {...this.props}
+                        useDefaultUI={false}
+                        ref={(nativePlayer) => this.player.ref = nativePlayer}
+                        style={this.props.style}
+                        onPlayerHeartbeat={this.events.onPlayerHeartbeat}
+                        onPlayerPlaybackTimeDidChange={this.events.onPlayerPlaybackTimeDidChange}
+                        onPlayerStatusDidChange={this.events.onPlayerStatusDidChange}
+                        onPlayerPlaybackDidFinish={this.events.onPlayerPlaybackDidFinish}
+                        onPlayerLoadingDidChange={this.events.onPlayerLoadingDidChange}
+                        onPlayerControlsHiddenDidChange={this.events.onPlayerControlsHiddenDidChange}
+                        onPlayerDisplayModeDidChange={this.events.onPlayerDisplayModeDidChange}
+                        onPlayerDisplayModeChangedWillAppear={this.events.onPlayerDisplayModeChangedWillAppear}
+                        onPlayerDisplayModeChangedDidAppear={this.events.onPlayerDisplayModeChangedDidAppear}
+                        onPlayerTapGestureRecognizer={this.events.onPlayerTapGestureRecognizer}
+                        onPlayerDidPersistContentKey={this.events.onPlayerDidPersistContentKey}
+                    />
+                    {this.renderLoader()}
+                    {this.renderBottomControls()}
+                </View>
+            </TouchableWithoutFeedback>
+```
+
+> ps: [react-native-ezplayer](https://github.com/easyui/react-native-ezplayer)整理中
 
 ## Todo
-- 优化ui，优化代码，添加注释
-- 优化demo
 - 支持VR
 - 支持iPad pip
 - 支持本地m3u8
@@ -269,14 +383,11 @@ open  var controlViewForIntercept : UIView?
 - 国际化
 - 记忆播放
 - 支持滤镜
-- 支持RN
 
 ## License
 EZPlayer遵守MIT协议，具体请参考MIT
 
 
-## PS
-2017年元旦在家撸了个播放器，EZPlayer是2017年码拉松的起点，希望大家多star，给更多动力更新所有todo
 
 
 

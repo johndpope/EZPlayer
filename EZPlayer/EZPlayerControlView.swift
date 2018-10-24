@@ -28,6 +28,7 @@ open class EZPlayerControlView: UIView{
     //    var controlsHidden = false
     @IBOutlet weak var navBarContainer: UIView!
     @IBOutlet weak var navBarContainerTopConstraint: NSLayoutConstraint!
+    @IBOutlet weak var ToolBarContainerBottomConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var toolBarContainer: UIView!
 
@@ -166,7 +167,7 @@ open class EZPlayerControlView: UIView{
         //        }
         if animated{
             UIView.setAnimationsEnabled(false)
-            UIView.animate(withDuration: ezAnimatedDuration, delay: 0,options: .curveEaseInOut, animations: {
+            UIView.animate(withDuration: EZPlayerAnimatedDuration, delay: 0,options: .curveEaseInOut, animations: {
                 self.autohidedControlViews.forEach{
                     $0.alpha = 0
                 }
@@ -194,11 +195,14 @@ open class EZPlayerControlView: UIView{
             self.autohidedControlViews.forEach{
                 $0.isHidden = false
             }
-            UIView.animate(withDuration: ezAnimatedDuration, delay: 0,options: .curveEaseInOut, animations: {
+            UIView.animate(withDuration: EZPlayerAnimatedDuration, delay: 0,options: .curveEaseInOut, animations: {
                 if self.player?.displayMode == .fullscreen{
-                    self.navBarContainerTopConstraint.constant = 20
+                    self.navBarContainerTopConstraint.constant =  EZPlayerUtils.isPhoneX && self.player?.fullScreenMode == .landscape ? 0 : EZPlayerUtils.statusBarHeight
+                    self.ToolBarContainerBottomConstraint.constant = EZPlayerUtils.isPhoneX ? self.player?.fullScreenMode == .portrait ? 34 : 21 : 0
+
                 }else{
                     self.navBarContainerTopConstraint.constant = 0
+                    self.ToolBarContainerBottomConstraint.constant = 0
                 }
                 self.autohidedControlViews.forEach{
                     $0.alpha = 1
@@ -213,7 +217,8 @@ open class EZPlayerControlView: UIView{
                 $0.alpha = 1
             }
             if self.player?.displayMode == .fullscreen{
-                self.navBarContainerTopConstraint.constant = 20
+                self.navBarContainerTopConstraint.constant =  EZPlayerUtils.isPhoneX && self.player?.fullScreenMode == .landscape ? 0 : EZPlayerUtils.statusBarHeight
+                self.ToolBarContainerBottomConstraint.constant = EZPlayerUtils.isPhoneX ? self.player?.fullScreenMode == .portrait ? 34 : 21 : 0
             }else{
                 self.navBarContainerTopConstraint.constant = 0
             }
